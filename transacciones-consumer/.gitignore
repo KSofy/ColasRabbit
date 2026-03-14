@@ -1,0 +1,10 @@
+/target/
+.settings/
+.project
+.classpath
+.factorypath
+bin/
+*.iml
+.idea/
+
+/src/main/resources/application.properties
