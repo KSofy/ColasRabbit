@@ -11,7 +11,7 @@ import umg.edu.gt.model.Transaccion;
  */
 @Service
 public class TransaccionReceiver {
-
+	
     /**
      * El Consumer se queda "escuchando" permanentemente estas colas.
      * Gracias a la anotación @RabbitListener, Spring Boot invoca este método 

@@ -25,24 +25,27 @@ public class MassageService {
      * @param t Objeto transacción completo obtenido de la API.
      */
     public void enviarABanco(Transaccion t) {
-        // Extraemos el nombre del banco (ej. "BI", "GYT") para usarlo como nombre de la cola
         String nombreCola = t.getBancoDestino();
         
-        /**
-         * CREACIÓN DINÁMICA: 
-         * Si el banco es nuevo y su cola no existe en RabbitMQ, RabbitAdmin la crea.
-         * El parámetro 'true' indica que la cola es DURABLE (sobrevive a reinicios).
-         */
-        rabbitAdmin.declareQueue(new Queue(nombreCola, true));
+        // 1. Declarar la cola con capacidad de prioridad (Rango 0-10)
+        java.util.Map<String, Object> args = new java.util.HashMap<>();
+        args.put("x-max-priority", 10); 
+        rabbitAdmin.declareQueue(new Queue(nombreCola, true, false, false, args));
         
-        /**
-         * ENVÍO DE DATOS:
-         * convertAndSend transforma automáticamente el objeto Transaccion a JSON
-         * gracias al MessageConverter que configuramos anteriormente.
-         */
-        rabbitTemplate.convertAndSend(nombreCola, t);
+        // 2. Lógica de Prioridad:
+        // Monto > 1000 -> Prioridad 10 (ALTA)
+        // De lo contrario -> Prioridad 1 (NORMAL)
+        int nivelPrioridad = (t.getMonto() > 1000) ? 10 : 1;
+        String etiqueta = (nivelPrioridad == 10) ? "ALTA" : "NORMAL";
+
+        // 3. Envío con la prioridad configurada
+        rabbitTemplate.convertAndSend(nombreCola, (Object) t, m -> {
+            m.getMessageProperties().setPriority(nivelPrioridad);
+            return m;
+        });
         
-        // Log de control para monitorear el flujo en la consola del Producer
-        System.out.println("[RABBIT] Transacción " + t.getIdTransaccion() + " enviada a: " + nombreCola);
+        
+        System.out.println(String.format("🚀 [RABBIT] ID: %s | Banco: %s | Prioridad: %s (%d)", 
+                           t.getIdTransaccion(), nombreCola, etiqueta, nivelPrioridad));
     }
 }

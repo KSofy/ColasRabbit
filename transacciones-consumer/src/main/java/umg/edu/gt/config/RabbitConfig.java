@@ -1,5 +1,6 @@
 package umg.edu.gt.config;
 
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,6 +17,11 @@ import org.springframework.amqp.support.converter.MessageConverter;
 @Configuration 
 public class RabbitConfig {
 
+	@Bean
+    public Queue colaDuplicados() {
+        // El nombre debe ser EXACTAMENTE el mismo que usaste en el convertAndSend
+        return new Queue("cola_duplicados", true); 
+    }
     /**
      * Define el conversor de mensajes. 
      * Es crucial que sea el mismo que usa el Producer para que la 
