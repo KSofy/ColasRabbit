@@ -50,3 +50,6 @@ Procesamiento masivo: Capacidad para manejar cientos de transacciones simultáne
 Persistencia: Datos almacenados en la infraestructura de AWS proporcionada por la cátedra.
 
 Monitoreo: Seguimiento en tiempo real a través de la interfaz de administración de RabbitMQ (localhost:15672).
+
+
+VIDEO https://drive.google.com/file/d/1Fuu7HgZuWNZftJzUYKhqvywJlhpd53xj/view?usp=drivesdk
